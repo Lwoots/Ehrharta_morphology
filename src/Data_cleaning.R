@@ -3,17 +3,28 @@
 #----------------------------------------------------
 
 if(!require(pacman)){install.packages("pacman", dependencies=TRUE); library(pacman)}
-p_load(here, tidyverse, visdat, ggfortify)
+p_load(here, tidyverse, visdat, ggfortify, corrplot)
 
 dat <- read.csv(here("Raw/Unprocessed", "Morphology_20191003.csv"), sep = ";")
-dat <- na.omit(dat)
 
+#Data exploration
 head(dat)
 summary(dat)
-
 vis_dat(dat)
+glimpse(dat)
 
 pairs(dat[,4:21])
+
+dat_omit <- na.omit(dat)
+
+corr_dat <- cor(dat[,4:24])
+corrplot(corr_dat[,4:21])
+
+hist(dat$Plant_height)
+hist(dat$Veg_height)
+hist((dat$Plant_height-dat$Veg_height)/dat$Plant_height)
+
+
 datforpca <- scale(dat[,c(4:24)])
 
 hist(dat$Plant_height)
