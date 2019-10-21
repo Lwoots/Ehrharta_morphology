@@ -34,7 +34,7 @@ autoplot(dat_pca,
          colour = 'Species',
          loadings = TRUE,
          loadings.label = T,
-         size = 5
+         size = 3
 )
 
 derivative_dat <- dat %>%
@@ -52,9 +52,10 @@ derivative_dat <- dat %>%
            Leaf_importance = dat$Leaf_length/dat$Sheath_length,
            Glume_sheathing = dat$Glume_length_outer/dat$Spikelet_length,
            Lemma_balance = dat$Lemma_outer_length/dat$Lemma_inner_length,
-           Spikelet_shape = dat$Spikelet_length/dat$Spikelet_width)
+           Spikelet_shape = dat$Spikelet_length/dat$Spikelet_width,
+           Leaf_packing = dat$Sheath_length/dat$Internode_dist)
 
-dat_pca <- prcomp(derivative_dat[,3:14], scale = T)
+dat_pca <- prcomp(derivative_dat[,3:16], scale = T)
 
 plot(dat_pca$x[,1], dat_pca$x[,3])
 
@@ -75,7 +76,7 @@ autoplot(dat_pca,
 )
 
 
-rupes <- dat[36:60,]
+rupes <- dat[36:84,]
 vis_dat(rupes)
 rupes <- na.omit(rupes)
 
@@ -84,13 +85,14 @@ ruppca <- na.omit(ruppca)
 
 dat_pca <- prcomp(ruppca)
 
-plot(dat_pca$x[,1], dat_pca$x[,2])
+plot(dat_pca$x[,1], dat_pca$x[,3])
 
 autoplot(dat_pca,
          data = rupes,
          colour = 'Species',
          #loadings = TRUE,
-         #loadings.label = T
+         #loadings.label = T,
+         size = 5
 )
 
 autoplot(dat_pca,
@@ -101,3 +103,33 @@ autoplot(dat_pca,
          size = 5
 )
 chc
+
+
+derivative_rup <- rupes %>%
+    select(Collection,
+           Species,
+           Plant_height,
+           Leaf_width,
+           Leaf_length,
+           Internode_dist,
+           Culm_diam,
+           Spikelet_no,
+           Pedicel_length_epu) %>%
+    mutate(Clearance = rupes$Plant_height/rupes$Veg_height,
+           Leaf_importance = rupes$Leaf_length/rupes$Sheath_length,
+           Glume_sheathing = rupes$Glume_length_outer/rupes$Spikelet_length,
+           Lemma_balance = rupes$Lemma_outer_length/rupes$Lemma_inner_length,
+           Spikelet_shape = rupes$Spikelet_length/rupes$Spikelet_width,
+           Leaf_packing = rupes$Sheath_length/rupes$Internode_dist)
+
+
+dat_pca <- prcomp(derivative_rup[,3:15], scale. = T)
+
+autoplot(dat_pca,
+         data = rupes,
+         colour = 'Species',
+         loadings = TRUE,
+         loadings.label = T,
+         size = 5
+)
+jh
