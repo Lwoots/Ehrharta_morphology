@@ -15,14 +15,14 @@ glimpse(dat)
 
 pairs(dat[,4:21])
 
-dat_omit <- na.omit(dat)
-
-corr_dat <- cor(dat[,4:24])
-corrplot(corr_dat[,4:21])
-
-hist(dat$Plant_height)
-hist(dat$Veg_height)
-hist((dat$Plant_height-dat$Veg_height)/dat$Plant_height)
+#dat_omit <- na.omit(dat)
+#
+#corr_dat <- cor(dat[,4:24])
+#corrplot(corr_dat[,4:21])
+#
+#hist(dat$Plant_height)
+#hist(dat$Veg_height)
+#hist((dat$Plant_height-dat$Veg_height)/dat$Plant_height)
 
 
 datforpca <- scale(dat[,c(4:24)])
