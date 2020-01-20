@@ -5,7 +5,7 @@
 if(!require(pacman)){install.packages("pacman", dependencies=TRUE); library(pacman)}
 p_load(here, tidyverse, visdat, ggfortify, corrplot)
 
-dat <- read.csv(here("Raw/Unprocessed", "Morphology_20200114.csv"), sep = ";")
+dat <- read.csv(here("Raw/Unprocessed", "Morphology_20200120.csv"), sep = ",")
 
 #Data exploration
 head(dat)
@@ -13,16 +13,77 @@ summary(dat)
 vis_dat(dat)
 glimpse(dat)
 
-pairs(dat[,4:21])
+dat <- dat[,1:24] #Get rid of extra columns
 
-dat_omit <- na.omit(dat[,c(1:24)])
-#
-#corr_dat <- cor(dat[,4:24])
-#corrplot(corr_dat[,4:21])
-#
-#hist(dat$Plant_height)
-#hist(dat$Veg_height)
-#hist((dat$Plant_height-dat$Veg_height)/dat$Plant_height)
+pairs(dat[,4:21])
+ehrharta <- na.omit(dat[,c(1:24)])
+
+#Subset data
+
+rupestris_clade <- ehrharta[c(grep("rupestris", ehrharta$Species), grep("setacea", ehrharta$Species)),]
+ramosa_clade <- ehrharta[c(grep("ramosa", ehrharta$Species), grep("rehmannii", ehrharta$Species)),]
+
+
+#PCA with the complete data
+
+pca_ehrharta <- prcomp(ehrharta[,4:24], scale. = T)
+
+plot(pca_ehrharta$x[,1], pca_ehrharta$x[,2])
+
+autoplot(pca_ehrharta,
+         data = ehrharta,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_ehrharta,
+         data = ehrharta,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+         
+)
+
+#PCA rupestris clade
+
+pca_rupestris <- prcomp(rupestris_clade[,c(4:21)], scale. = T) #Drop last 3 columns as they don't vary
+
+plot(pca_rupestris$x[,1], pca_rupestris$x[,2])
+
+autoplot(pca_rupestris,
+         data = rupestris_clade,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_rupestris,
+         data = rupestris_clade,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+)
+
+#PCA ramosa clade
+
+pca_ramosa <- prcomp(ramosa_clade[,c(4:24)], scale. = T)
+
+plot(pca_ramosa$x[,1], pca_ramosa$x[,2])
+
+autoplot(pca_ramosa,
+         data = ramosa_clade,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_ramosa,
+         data = ramosa_clade,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+)
 
 
 datforpca <- scale(dat_omit[,c(4:24)])
