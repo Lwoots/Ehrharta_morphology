@@ -16,6 +16,12 @@ glimpse(dat)
 dat <- dat[,1:24] #Get rid of extra columns
 
 pairs(dat[,4:21])
+#vegetative pairs
+pairs(dat[,4:12])
+#Spikelet pairs
+pairs(dat[,15:21])
+
+
 ehrharta <- na.omit(dat[,c(1:24)])
 
 #Subset data
@@ -84,6 +90,116 @@ autoplot(pca_ramosa,
          loadings = TRUE,
          loadings.label = T
 )
+
+#How do ratios change the PCA? ####
+
+#Create dataset with derivative measures
+derivative_ehrharta <- ehrharta %>%
+    select(Collection,
+           Species,
+           Plant_height,
+           Leaf_width,
+           Leaf_length,
+           Internode_dist,
+           Culm_diam,
+           Spikelet_no,
+           Pedicel_length_epu,
+           Striation_no) %>%
+    mutate(Clearance = ehrharta$Plant_height/ehrharta$Veg_height,
+           Leaf_importance = ehrharta$Leaf_length/ehrharta$Sheath_length,
+           Glume_sheathing = ehrharta$Glume_length_outer/ehrharta$Spikelet_length,
+           Lemma_balance = ehrharta$Lemma_outer_length/ehrharta$Lemma_inner_length,
+           Spikelet_shape = ehrharta$Spikelet_length/ehrharta$Spikelet_width,
+           Leaf_packing = ehrharta$Sheath_length/ehrharta$Internode_dist)
+
+#Subset data
+
+rupestris_derivative <- derivative_ehrharta[c(grep("rupestris", derivative_ehrharta$Species), grep("setacea", derivative_ehrharta$Species)),]
+ramosa_derivative <- derivative_ehrharta[c(grep("ramosa", derivative_ehrharta$Species), grep("rehmannii", derivative_ehrharta$Species)),]
+
+#PCA full dataset
+
+pca_derivative_ehrharta <- prcomp(derivative_ehrharta[,3:16], scale. = T)
+
+plot(pca_derivative_ehrharta$x[,1], pca_derivative_ehrharta$x[,2])
+
+autoplot(pca_derivative_ehrharta,
+         data = derivative_ehrharta,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_derivative_ehrharta,
+         data = derivative_ehrharta,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+         
+)
+
+#PCA rupestris clade
+
+pca_derivative_rupestris <- prcomp(rupestris_derivative[,c(3:9, 11:16)], scale. = T) #Drop unvarying column
+
+plot(pca_derivative_rupestris$x[,1], pca_derivative_rupestris$x[,2])
+
+autoplot(pca_derivative_rupestris,
+         data = rupestris_derivative,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_derivative_rupestris,
+         data = rupestris_derivative,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+)
+
+#PCA ramosa clade
+
+pca_derivative_ramosa <- prcomp(ramosa_derivative[,c(3:16)], scale. = T)
+
+plot(pca_derivative_ramosa$x[,1], pca_derivative_ramosa$x[,2])
+
+autoplot(pca_derivative_ramosa,
+         data = ramosa_derivative,
+         colour = 'Species',
+         size = 3
+)
+
+autoplot(pca_derivative_ramosa,
+         data = ramosa_derivative,
+         colour = 'Species',
+         size = 3,
+         loadings = TRUE,
+         loadings.label = T
+)
+
+
+
+#Some data visualisation
+
+ggplot(ehrharta, aes(Plant_height)) +
+    theme_classic() +
+    geom_histogram(alpha = 0.15) +
+    geom_histogram(data = rupestris_clade, fill = "dark green", alpha = 0.2) +
+    geom_histogram(data = ramosa_clade, fill = "red", alpha = 0.2)
+
+ggplot(ehrharta, aes(Leaf_width)) +
+    theme_classic() +
+    geom_histogram(alpha = 0.15) +
+    geom_histogram(data = rupestris_clade, fill = "dark green", alpha = 0.2) +
+    geom_histogram(data = ramosa_clade, fill = "red", alpha = 0.2)
+
+ggplot(ehrharta, aes(Internode_dist)) +
+    theme_classic() +
+    geom_histogram(alpha = 0.15) +
+    geom_histogram(data = rupestris_clade, fill = "dark green", alpha = 0.2) +
+    geom_histogram(data = ramosa_clade, fill = "red", alpha = 0.2)
+
 
 
 datforpca <- scale(dat_omit[,c(4:24)])
